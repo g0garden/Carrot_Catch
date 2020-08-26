@@ -20,30 +20,47 @@ let started = false;
 let score = 0;
 let timer = undefined;
 
+
+field.addEventListener('click', onFieldClick);
 gameBtn.addEventListener('click', () => {
     if(started) {
         stopGame();
     } else {
         startGame();
     }
-    started = !started;
 });
+popUpRefresh.addEventListener('click',() => {
+    startGame();
+    hidePopUp();
+})
 
+
+//Start Game
 function startGame(){
+    started = true;
     initGame(); // 플레이버튼을 눌렀을때 게임이 시작되어야 하니까 
     showStopButton();
     showTimerAndScore();  
     startGameTimer();
 }
 
+//Stop Game
 function stopGame(){
+    started = false;
     stopGameTimer();
     hideGameButton();
     showPopUpWithText('REPLAY🤩')
 }
 
+//Finish Game
+function finishGame(win) {
+    started = false;
+    hideGameButton();
+    showPopUpWithText(win? 'YOU WON' : 'YOU LOST');
+}
+
 function showStopButton(){
-    const icon = gameBtn.querySelector('.fa-play');
+    const icon = gameBtn.querySelector('.fas');
     icon.classList.add('fa-stop');
     icon.classList.remove('fa-play');
 }
@@ -64,6 +81,8 @@ function startGameTimer(){
     timer = setInterval(() => {
         if(remaininTimeSec <= 0) {
             clearInterval(timer);
+            //시간안에 당근개수못 채워도 lost
+            finishGame(CARROT_COUNT === score);
             return;
         }
         updateTimerText(--remaininTimeSec);
@@ -85,7 +104,10 @@ function updateTimerText(time) {
 function showPopUpWithText(text){
     popUpText.innerText = text;
     popUp.classList.remove('pop-up-hide');
+}
 
+function hidePopUp(){
+    popUp.classList.add('pop-up-hide');
 }
 
 function initGame(){
@@ -95,6 +117,34 @@ function initGame(){
     addItem('carrot', CARROT_COUNT, 'img/carrot.png');
     addItem('bug', BUG_COUNT, 'img/bug.png');
     
+}
+
+function onFieldClick(event) {
+    //함수안에서 조건이 맞지 않을 때 빨리 함수를 리턴하도록 만들기! 
+    if(!started){
+        //started가 아니면 리턴함수로 나가기
+        return; 
+    }
+    const target = event.target;
+    if(target.matches('.carrot')){
+        //당근!
+        target.remove();
+        score++;
+        updateScoreBoard();
+        if(score === CARROT_COUNT){
+            finishGame(true);   // 함수호출시, boolean으로 하는 것은 비추 true가 뭐고 false가 뭔지 모르니까 
+        }
+    }else if(target.matches('.bug')){
+        stopGameTimer();
+        finishGame(false);
+    }
+}
+
+
+
+function updateScoreBoard(){
+    //남은 당근의 개수
+    gameScore.innerText = CARROT_COUNT - score; 
 }
 
 function addItem(className, count, imgPath){
