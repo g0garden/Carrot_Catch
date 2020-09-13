@@ -1,5 +1,5 @@
-'use strict'
-
+'use strict';
+import PopUp from './popup.js';
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
@@ -10,11 +10,6 @@ const fieldRect = field.getBoundingClientRect();
 const gameBtn = document.querySelector('.game_button');
 const gameTimer = document.querySelector('.game_timer');
 const gameScore = document.querySelector('.game_score');
-
-const popUp = document.querySelector('.pop-up');
-const popUpRefresh = document.querySelector('.pop-up_refresh');
-const popUpText = document.querySelector('.pop-up_message');
-
 
 const carrotSound = new Audio('./sound/carrot_pull.mp3');
 const alertSound = new Audio('./sound/alert.wav');
@@ -27,6 +22,11 @@ let started = false;
 let score = 0;
 let timer = undefined;
 
+//클래스가 어디에 쓰이는지에 따라서 적절한 변수명을 지어주기!! 
+const gameFinishBanner = new PopUp();
+gameFinishBanner.setClickListener(( )=> {
+    startGame();
+});
 
 field.addEventListener('click', onFieldClick);
 gameBtn.addEventListener('click', () => {
@@ -36,10 +36,6 @@ gameBtn.addEventListener('click', () => {
         startGame();
     }
 });
-popUpRefresh.addEventListener('click',() => {
-    startGame();
-    hidePopUp();
-})
 
 
 //Start Game
@@ -57,7 +53,7 @@ function stopGame(){
     started = false;
     stopGameTimer();
     hideGameButton();
-    showPopUpWithText('REPLAY🤩')
+    gameFinishBanner.showWithText('REPLAY🤩')
     playSound(alertSound);
     stopSound(bgSound);
 }
@@ -73,7 +69,7 @@ function finishGame(win) {
     }
     stopGameTimer();
     stopSound(bgSound);
-    showPopUpWithText(win? 'YOU WON' : 'YOU LOST');
+    gameFinishBanner.showWithText(win? 'YOU WON' : 'YOU LOST');
 }
 
 function showStopButton(){
@@ -118,23 +114,11 @@ function updateTimerText(time) {
     gameTimer.innerText = `${minutes}:${seconds}`;
 }
 
-
-function showPopUpWithText(text){
-    popUpText.innerText = text;
-    popUp.classList.remove('pop-up-hide');
-}
-
-function hidePopUp(){
-    popUp.classList.add('pop-up-hide');
-}
-
+//initGame
 function initGame(){
     score = 0; // 게임끝나면 다시 0에서 시작해야쥬
-    field.innerHTML = '';
     gameScore.innerText = CARROT_COUNT;
     //벌레와 당근을 생성한뒤 field에 추가해줌
-    addItem('carrot', CARROT_COUNT, 'img/carrot.png');
-    addItem('bug', BUG_COUNT, 'img/bug.png');
     
 }
 
