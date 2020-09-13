@@ -1,6 +1,8 @@
 'use strict';
+
 import PopUp from './popup.js';
-const CARROT_SIZE = 80;
+import Field from './field.js';
+
 const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
 const GAME_DURATION_SEC = 5;
@@ -28,7 +30,28 @@ gameFinishBanner.setClickListener(( )=> {
     startGame();
 });
 
-field.addEventListener('click', onFieldClick);
+const gameField = new Field(CARROT_COUNT,BUG_COUNT);
+gameField.setClickListener(onItemClick);
+
+
+function onItemClick(item) {
+    //함수안에서 조건이 맞지 않을 때 빨리 함수를 리턴하도록 만들기! 
+    if(!started){
+        //started가 아니면 리턴함수로 나가기
+        return; 
+    }
+    if(item === '.carrot'){
+        score++;
+        updateScoreBoard();
+        if(score === CARROT_COUNT){
+            finishGame(true);   // 함수호출시, boolean으로 하는 것은 비추 true가 뭐고 false가 뭔지 모르니까 
+        }
+    } else if(item === '.bug'){  
+        finishGame(false);
+    }
+}
+
+
 gameBtn.addEventListener('click', () => {
     if(started) {
         stopGame();
@@ -119,30 +142,10 @@ function initGame(){
     score = 0; // 게임끝나면 다시 0에서 시작해야쥬
     gameScore.innerText = CARROT_COUNT;
     //벌레와 당근을 생성한뒤 field에 추가해줌
-    
+    gameField.init(); 
 }
 
-function onFieldClick(event) {
-    //함수안에서 조건이 맞지 않을 때 빨리 함수를 리턴하도록 만들기! 
-    if(!started){
-        //started가 아니면 리턴함수로 나가기
-        return; 
-    }
-    const target = event.target;
-    if(target.matches('.carrot')){
-        //당근!
-        target.remove();
-        score++;
-        playSound(carrotSound);
-        updateScoreBoard();
-        if(score === CARROT_COUNT){
-            finishGame(true);   // 함수호출시, boolean으로 하는 것은 비추 true가 뭐고 false가 뭔지 모르니까 
-        }
-    }else if(target.matches('.bug')){
-        
-        finishGame(false);
-    }
-}
+
 
 //Sound
 function playSound(sound){
@@ -156,24 +159,6 @@ function stopSound(sound){
 function updateScoreBoard(){
     //남은 당근의 개수
     gameScore.innerText = CARROT_COUNT - score; 
-}
-
-function addItem(className, count, imgPath){
-    const x1 = 0;
-    const y1 = 0;
-    const x2 = fieldRect.width - CARROT_SIZE;
-    const y2 = fieldRect.height - CARROT_SIZE;
-    for (let i = 0; i < count ; i++){
-        const item = document.createElement('img');
-        item.setAttribute('class', className);
-        item.setAttribute('src', imgPath);
-        item.style.position = 'absolute';
-        const x = randomNumber(x1, x2);
-        const y = randomNumber(y1, y2);
-        item.style.left=`${x}px`;
-        item.style.top = `${y}px`;
-        field.appendChild(item);
-    }
 }
 
 function randomNumber(min, max){
