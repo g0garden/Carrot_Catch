@@ -2,6 +2,8 @@
 
 import PopUp from './popup.js';
 import Field from './field.js';
+import * as sound from './sound.js';
+
 
 const CARROT_COUNT = 5;
 const BUG_COUNT = 5;
@@ -13,11 +15,6 @@ const gameBtn = document.querySelector('.game_button');
 const gameTimer = document.querySelector('.game_timer');
 const gameScore = document.querySelector('.game_score');
 
-const carrotSound = new Audio('./sound/carrot_pull.mp3');
-const alertSound = new Audio('./sound/alert.wav');
-const bgSound = new Audio('./sound/bg.mp3');
-const bugSound = new Audio('./sound/bug_pull.mp3');
-const winSound = new Audio('./sound/game_win.mp3');
 
 //게임의 상태를 기억하고 있어야 되는 변수 필요
 let started = false;
@@ -68,7 +65,7 @@ function startGame(){
     showStopButton();
     showTimerAndScore();  
     startGameTimer();
-    playSound(bgSound);
+    sound.playBackground();
 }
 
 //Stop Game
@@ -77,8 +74,8 @@ function stopGame(){
     stopGameTimer();
     hideGameButton();
     gameFinishBanner.showWithText('REPLAY🤩')
-    playSound(alertSound);
-    stopSound(bgSound);
+    sound.playAlert();
+    sound.stopBackground();
 }
 
 //Finish Game
@@ -86,9 +83,9 @@ function finishGame(win) {
     started = false;
     hideGameButton();
     if(win){
-        playSound(winSound);
+        sound.playWin();
     } else {
-        playSound(bugSound);
+        sound.playBug();
     }
     stopGameTimer();
     stopSound(bgSound);
@@ -148,20 +145,11 @@ function initGame(){
 
 
 //Sound
-function playSound(sound){
-    sound.currentTime = 0; //다시 시작할때는 항상 처음부터 재생되도록
-    sound.play();
-}
 
-function stopSound(sound){
-    sound.pause();
-}
 function updateScoreBoard(){
     //남은 당근의 개수
     gameScore.innerText = CARROT_COUNT - score; 
 }
 
-function randomNumber(min, max){
-    return Math.random() * (max - min) + min;
-}
+
 
