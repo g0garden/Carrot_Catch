@@ -1,7 +1,8 @@
 'use strict'
-import * as sound from './sound.js';
-import Field from './field.js';
 
+import {Field, IteType } from './field.js';
+
+//JS에서 타입보장하는 방법 
 export const Reason = Object.freeze({
     win:'win',
     lose:'lose',
@@ -47,7 +48,7 @@ class Game{
         this.gameBtn = document.querySelector('.game_button');
         this.gameBtn.addEventListener('click', () => {
             if(this.started) {
-                this.stop();
+                this.stop(Reason.cancle);
             } else {
                 this.start();
             }
@@ -78,30 +79,15 @@ class Game{
     }
 
     //Stop Game
-    stop(){
+    stop(reason){
         this.started = false;
         this.stopGameTimer();
         this.hideGameButton();
-        sound.playAlert();
         sound.stopBackground();
-        this.onGameStop && this.onGameStop(Reason.cancel);
-        //사용자가 stop버튼을 눌렀으니까 게임이 멈춤cancel
+        this.onGameStop && this.onGameStop(reason);
     }
 
-    //Finish Game
-    finish(win) {
-        this.started = false;
-        this.hideGameButton();
-        if(win){
-            sound.playWin();
-        } else {
-            sound.playBug();
-        }
-        this.stopGameTimer();
-        sound.stopBackground();
-        this.onGameStop && this.onGameStop(win ? Reason.win : Reason.lose);
-        //게임이 끝났으니까 게임이 멈췄겠지 그리고 결과가 있겠지? 이겼거나 젔거나
-    }
+
 
     onItemClick = (item) => {
         //함수안에서 조건이 맞지 않을 때 빨리 함수를 리턴하도록 만들기! 
@@ -109,14 +95,14 @@ class Game{
             //started가 아니면 리턴함수로 나가기
             return; 
         }
-        if(item === 'carrot'){
+        if(item === IteType.carrot){
             this.score++;
             this.updateScoreBoard();
             if(this.score === this.carrotCount){
-                this.finish(true);   // 함수호출시, boolean으로 하는 것은 비추 true가 뭐고 false가 뭔지 모르니까 
+                this.stop(Reason.win);   // 함수호출시, boolean으로 하는 것은 비추 true가 뭐고 false가 뭔지 모르니까 
             }
-        } else if(item === 'bug'){  
-            this.finish(false);
+        } else if(item === ItemType.bug){  
+            this.stop(Reason.lose);
         }
     };
 
@@ -144,7 +130,7 @@ class Game{
         if(remaininTimeSec <= 0) {
             clearInterval(this.timer);
             //시간안에 당근개수못 채워도 lost
-            this.finish(this.carrotCount === this.score);
+            this.stop(this.carrotCount === this.score ? Reason.win : Reason.lose);
             return;
         }
         this.updateTimerText(--remaininTimeSec);
