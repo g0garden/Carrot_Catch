@@ -2,8 +2,6 @@
 
 
 const carrotSound = new Audio('./sound/carrot_pull.mp3');
-
-const carrotSound = new Audio('./sound/carrot_pull.mp3');
 const alertSound = new Audio('./sound/alert.wav');
 const bgSound = new Audio('./sound/bg.mp3');
 const bugSound = new Audio('./sound/bug_pull.mp3');
@@ -32,7 +30,7 @@ export function playBackground(){
 }
 
 export function stopBackground(){
-    stopSound(bgsound);
+    stopSound(bgSound);
 }
 
 function playSound(sound){

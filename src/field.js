@@ -9,7 +9,7 @@ export default class Field{
         this.bugCount = bugCount;
         this.field = document.querySelector('.game_field');
         this.fieldRect = this.field.getBoundingClientRect();
-        this.field.addEventListener('click',this.onClick);
+        this.field.addEventListener('click', this.onClick);
     }
 
     init(){
@@ -21,6 +21,7 @@ export default class Field{
     setClickListener(onItemClick) {
         this.onItemClick = onItemClick;
     }
+
     //프라이빗한 함수를 표현하기 위해 _사용 -> 외부에서 부르지 않도록
     _addItem(className, count, imgPath){
         const x1 = 0;
@@ -40,7 +41,7 @@ export default class Field{
         }
     }
     
-    onClick(event) {
+    onClick = event => {
         const target = event.target;
         if(target.matches('.carrot')){
         //당근!
@@ -48,9 +49,9 @@ export default class Field{
         sound.playCarrot();
         this.onItemClick && this.onItemClick('carrot');
         } else if(target.matches('.bug')){
-            this.onItemClick && this.onItemClick('bug');
+            this.onItemClick && this.onItemClick('.bug');
         }
-    }
+    };
 }
 
 function randomNumber(min, max){
