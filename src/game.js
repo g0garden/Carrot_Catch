@@ -2,8 +2,15 @@
 import * as sound from './sound.js';
 import Field from './field.js';
 
+export const Reason = Object.freeze({
+    win:'win',
+    lose:'lose',
+    cancle:'cancle',
+});
+
+
 //Builder Pattern
-export default class GameBuilder{
+export class GameBuilder{
     gameDuration(duration){
         this.gameDuration = duration;
         return this;
@@ -77,7 +84,7 @@ class Game{
         this.hideGameButton();
         sound.playAlert();
         sound.stopBackground();
-        this.onGameStop && this.onGameStop('cancel');
+        this.onGameStop && this.onGameStop(Reason.cancel);
         //사용자가 stop버튼을 눌렀으니까 게임이 멈춤cancel
     }
 
@@ -92,7 +99,7 @@ class Game{
         }
         this.stopGameTimer();
         sound.stopBackground();
-        this.onGameStop && this.onGameStop(win ? 'win' : 'lose');
+        this.onGameStop && this.onGameStop(win ? Reason.win : Reason.lose);
         //게임이 끝났으니까 게임이 멈췄겠지 그리고 결과가 있겠지? 이겼거나 젔거나
     }
 
